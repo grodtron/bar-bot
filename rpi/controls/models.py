@@ -1,3 +1,9 @@
+class Slot(object):
+   def __init__(self, spire, position):
+      self.spire    = spire
+      self.position = position
+   def __str__(self):
+      return "Slot<%d, %d>" % (self.spire, self.position)
 
 class Ingredient(object):
    def __init__(self, name):
@@ -57,6 +63,9 @@ class DrinkRegistry(object):
          return self.registry[a].keys()
       else:
          return self.registry[type(a)][a]
+
+   def get_all_ingredients(self):
+      return self.ingredients_by_name.values()
 
 class Drink(object):
    
