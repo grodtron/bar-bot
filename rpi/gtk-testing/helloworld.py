@@ -76,10 +76,14 @@ class HelloWorld:
         self.window.add(self.lay)
 
 	self.vbox = gtk.VBox()
+
+	self.vbox.set_size_request(self.width, self.height)
 	
 
 	for i in range(4):
-		b = gtk.Button("This is a test" + str(i))
+		self.b = b = gtk.Button("<span size='48000'>This is a test</span>" + str(i))
+		b.child.set_use_markup(True)
+		##self.lay.add(b)
 		self.vbox.add(b)
 		b.show()
     
