@@ -8,10 +8,13 @@ class Slot(object):
 class Ingredient(object):
    def __init__(self, name):
       self.name = name
-      self.slots = set()
+      self.slots = {}
 
    def add_slot(self, slot):
-      self.slots.add(slot)
+      self.slots[slot] = 0
+
+   def inc_use_count(self, slot):
+      self.slots[slot] += 1
 
    def __str__(self):
       return self.name
@@ -67,6 +70,11 @@ class DrinkRegistry(object):
    def get_all_ingredients(self):
       return self.ingredients_by_name.values()
 
+class DrinkIngredientAmount(object):
+   def __init__(self, ingredient, amount):
+      self.ingredient = ingredient
+      self.amount     = amount
+
 class Drink(object):
    
    def __init__(self, name, desc):
@@ -75,7 +83,7 @@ class Drink(object):
       self.ingredients = set()
 
    def add(self, ingredient, amount):
-      self.ingredients.add( (ingredient, amount) )
+      self.ingredients.add( DrinkIngredientAmount(ingredient, amount) )
 
    def __str__(self):
       return self.name
