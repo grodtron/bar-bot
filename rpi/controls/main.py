@@ -1,5 +1,6 @@
-from models import Alcohol, Mixer, Drink, DrinkRegistry, Slot
-from menu   import MenuItem, Menu
+from models    import Alcohol, Mixer, Drink, DrinkRegistry, Slot
+from menu      import MenuItem, Menu
+from scheduler import get_movement_schedule
 import config
 import random
 import cPickle as pickle
@@ -69,9 +70,10 @@ def main():
       print "Ingredient %s is in slots: (%s)" % (str(i), ", ".join(map(str, i.slots)))
 
    menu = build_main_menu(reg)
+
+   current = {1:Slot(1,1), 2:Slot(2,1)}
    
    while True:
-
       if menu.is_leaf():
          print menu.key.description
 
@@ -84,8 +86,26 @@ def main():
             print "Selected Drink:", drink
             print "               ", drink.description
             print "Pouring ingredients from:"
-            for i in drink.ingredients:
-               print "   ", i[0], random.choice(list(i[0].slots))
+
+            seq = get_movement_schedule(drink, current)
+
+            while len(seq[1]) and len(seq[2]):
+               new1 = seq[1].pop()
+               new2 = seq[2].pop()
+               print "Moving from", str(current[1])+"-"+str(current[2]), "to", str(new1)+"-"+str(new2)
+               current[1] = new1
+               current[2] = new2
+
+            while len(seq[1]):
+               new = seq[1].pop()
+               print "Moving from", str(current[1])+"-"+str(current[2]), "to", new
+               current[1] = new
+
+            while len(seq[2]):
+               new = seq[2].pop()
+               print "Moving from", str(current[1])+"-"+str(current[2]), "to", new
+               current[2] = new
+
             menu = menu.back().back().back()
          else:
             print "invalid choice %s" % choice

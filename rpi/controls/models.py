@@ -46,7 +46,7 @@ class DrinkRegistry(object):
    def add(self, a):
       if type(a) is Drink:
          for i in a.ingredients:
-            self.registry[type(i[0])][i[0]].add(a)
+            self.registry[type(i.ingredient)][i.ingredient].add(a)
       else:
 
          if self.ingredients_by_name.has_key(str(a)):
