@@ -117,7 +117,7 @@ class HelloWorld:
       except AttributeError:
          choices = (self.menu.key,)
 
-      for choice in self.menu.choices:
+      for choice in choices:
          self.b = b = gtk.Button("<span size='44000'>%s</span>" % choice)
          b.child.set_use_markup(True)
          self.vbox.add(b)
