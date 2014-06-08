@@ -86,9 +86,9 @@ class HelloWorld:
    
    def handle_input(self, button, joystick):
       if self.prev_joystick_state == NONE:
-         if   joystick == UP:
+         if   joystick == UP   and not self.menu.is_leaf():
             self.curr_choice = max(0, self.curr_choice - 1)
-         elif joystick == DOWN:
+         elif joystick == DOWN and not self.menu.is_leaf():
             self.curr_choice = min(len(self.menu.choices) - 1, self.curr_choice + 1)
          elif joystick == RIGHT:
             if not self.menu.is_leaf():
@@ -118,7 +118,8 @@ class HelloWorld:
          choices = (self.menu.key,)
 
       for choice in choices:
-         self.b = b = gtk.Button("<span size='44000'>%s</span>" % choice)
+         b = gtk.Button("<span size='44000'>%s</span>"
+            % gobject.markup_escape_text(str(choice)))
          b.child.set_use_markup(True)
          self.vbox.add(b)
          b.show()

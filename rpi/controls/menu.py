@@ -44,7 +44,11 @@ class Menu(object):
       return self.parent
 
    def choice(self, n):
-      return self.choices[n].menu()
+      try:
+         return self.choices[n].menu()
+      except IndexError:
+         print "WARNING: returning self for a childless Menu"
+         return self
 
    def is_leaf(self):
       return False
