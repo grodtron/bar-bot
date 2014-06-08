@@ -59,6 +59,13 @@ class PouringCommand(object):
       self._buff = buff
       
 
+class QueuedCommand(object):
+   
+   def __init__(self, command):
+      self.next     = None
+      self.start_at = 0
+      self.command  = None
+
 
 class PourManager(object):
 
