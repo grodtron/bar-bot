@@ -1,3 +1,9 @@
 *.swp
 *.swo
-*/Debug/*
+*.pyc
+*.p
+
+*.sdf
+*.suo
+*.vcxproj
+*.vmps.xml

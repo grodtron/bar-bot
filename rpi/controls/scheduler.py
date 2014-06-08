@@ -53,18 +53,18 @@ def get_usable_slot(ingredient):
 ##BLOCK_COMMENT   return closest
 
 
+class SlotAmount(object):
+   def __init__(self, slot, amount):
+      self.slot   = slot
+      self.amount = amount
+   def __str__(self):
+      return str(self.slot) + "x" + str(self.amount)
+
 
 # Get a sequence of movements as two queues, one for each spire. They will be sorted
 # so that longer drinks pour first. They will be queued so that the distance moved
 # between each is minimized
 def get_movement_schedule(drink, current_position): # current_pos is unused, but may as well keep it
-   class SlotAmount(object):
-      def __init__(self, slot, amount):
-         self.slot   = slot
-         self.amount = amount
-      def __str__(self):
-         return str(self.slot) + "x" + str(self.amount)
-
    # For each ingredient in the drink, get the available slots we could pour
    # from. Available slots are those containing the drink which are not overused.
    # If any drink has more than X less in it than another, it is excluded, to avoid
