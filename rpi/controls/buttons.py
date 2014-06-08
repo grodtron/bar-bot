@@ -1,3 +1,5 @@
+import RPi.GPIO as gpio
+
 NONE  = 0
 UP    = 1
 DOWN  = 2
@@ -7,28 +9,55 @@ RIGHT = 4
 PRESSED   = 1
 UNPRESSED = 0
 
-def read_joystick():
-   s = raw_input("input joystick as w-a-s-d: ")
-   print "got >>>>%s<<<<" % s
-   if   s == "w":
-      print "returning UP"
-      return UP
-   elif s == "a":
-      print "returning LEFT"
-      return LEFT
-   elif s == "s":
-      print "returning DOWN"
-      return DOWN
-   elif s == "d":
-      print "returning RIGHT"
-      return RIGHT
-   else:
-      print "returning NONE"
-      return NONE
+class Joystick(object):
+   def __init__(self):
+      self.UP_PIN    = 26
+      self.DOWN_PIN  = 23
+      self.LEFT_PIN  = 24
+      self.RIGHT_PIN = 22
+      gpio.setmode(gpio.BOARD)
+      gpio.setup(self.UP_PIN,    gpio.IN, pull_up_down=gpio.PUD_UP)
+      gpio.setup(self.DOWN_PIN,  gpio.IN, pull_up_down=gpio.PUD_UP)
+      gpio.setup(self.LEFT_PIN,  gpio.IN, pull_up_down=gpio.PUD_UP)
+      gpio.setup(self.RIGHT_PIN, gpio.IN, pull_up_down=gpio.PUD_UP)
 
-def read_button():
-   s = raw_input("Enter button, empty string is unpressed")
-   if len(s):
-      return PRESSED
-   else:
-      return UNPRESSED
+   def read(self):
+      up    = (gpio.input(self.UP_PIN)    == 0)
+      down  = (gpio.input(self.DOWN_PIN)  == 0)
+      left  = (gpio.input(self.LEFT_PIN)  == 0)
+      right = (gpio.input(self.RIGHT_PIN) == 0)
+
+      if   up    and not (left or right):
+         return UP
+      elif down  and not (left or right):
+         return DOWN
+      elif left  and not (up or down):
+         return LEFT
+      elif right and not (up or down):
+         return RIGHT
+      else:
+         return NONE
+
+#def read_button():
+#   s = raw_input("Enter button, empty string is unpressed")
+#   if len(s):
+#      return PRESSED
+#   else:
+#      return UNPRESSED
+
+from time import sleep
+def main():
+   dir_names = {UP:"up", LEFT:"left", RIGHT:"right", DOWN:"down", NONE:"none"}
+
+   j = Joystick()
+
+   while True:
+      x = j.read()
+      print x
+      sleep(0.1)
+      
+if __name__ == '__main__':
+   try:
+      main()
+   except KeyboardInterrupt:
+      gpio.cleanup()

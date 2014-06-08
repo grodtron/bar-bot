@@ -10,7 +10,7 @@ import gobject
 import time
 
 from configurator import Configurator
-from buttons import NONE, LEFT, RIGHT, UP, DOWN, PRESSED, UNPRESSED, read_button, read_joystick
+from buttons import NONE, LEFT, RIGHT, UP, DOWN, PRESSED, UNPRESSED, Joystick
 
 
 WAITING = 1
@@ -20,9 +20,16 @@ SLIDING = 2
 class HelloWorld:
 
    def __init__(self):
+      print "init'ing menu"
       self.init_menu()
+      print "init'ing inputs"
+      self.init_inputs()
+      print "init'ing gui"
       self.init_gui()
       self.state = WAITING
+
+   def init_inputs(self):
+      self.joystick = Joystick()
 
    def init_menu(self):
       self.conf = Configurator()
@@ -34,8 +41,8 @@ class HelloWorld:
       self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 
       screen = self.window.get_screen()
-      self.width = 512 #screen.get_width()
-      self.height= 256 #screen.get_height()
+      self.width = screen.get_width()
+      self.height= screen.get_height()
       self.window.resize(self.width, self.height)
     
       # This packs the button into the window (a GTK container).
@@ -57,6 +64,8 @@ class HelloWorld:
 
       self.vbox.show()
       self.lay.show()
+
+      self.update_choice()
     
       self.window.show()
 
@@ -71,8 +80,8 @@ class HelloWorld:
 
    def state_machine_tick(self):
       if self.state == WAITING:
-         button_state   = read_button()
-         joystick_state = read_joystick()
+         button_state   = UNPRESSED#read_button()
+         joystick_state = self.joystick.read()
          self.handle_input(button_state, joystick_state)
       if self.state == SLIDING:
          # TODO - slide tick in direction
@@ -95,10 +104,13 @@ class HelloWorld:
       print "self.curr_choice is now", self.curr_choice
       for i, child in enumerate(self.vbox.get_children()):
          # TODO - there must be a better way of setting this no?
-         if i == self.curr_choice:
-            child.get_child().modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("blue"))
-         else:
-            child.get_child().modify_fg(gtk.STATE_NORMAL, gtk.gdk.color_parse("grey"))
+         for state in (gtk.STATE_NORMAL, gtk.STATE_PRELIGHT):
+            if i == self.curr_choice:
+               child.modify_fg(state, gtk.gdk.color_parse("#000000"))
+               child.modify_bg(state, gtk.gdk.color_parse("#FCFF3D"))
+            else:
+               child.modify_fg(state, gtk.gdk.color_parse("#555555"))
+               child.modify_bg(state, gtk.gdk.color_parse("#CCCCCC"))
       self.vbox.queue_draw()
 
 
