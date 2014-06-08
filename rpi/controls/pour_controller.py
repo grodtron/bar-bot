@@ -186,6 +186,10 @@ class PourManager(object):
             ))
       self._do_next_command(2)
 
+   def currently_pouring(self):
+      return ((self.current_executing_command[1] and self.current_executing_command[1].executing())
+                or
+              (self.current_executing_command[2] and self.current_executing_command[2].executing()))
 
    def update(self):
       self._do_next_command(1)
