@@ -5,9 +5,29 @@ UP    = 1
 DOWN  = 2
 LEFT  = 3
 RIGHT = 4
+MANY  = 5
 
 PRESSED   = 1
 UNPRESSED = 0
+
+"""
+Connections are:
+
+Joystick:
+
+   The corner that the wires come out of is the top left
+
+   black   - gnd
+   green   - GPIO 25
+   yellow  - GPIO CE0
+   orange  - GPIO CE1
+   red     - GPIO CLK
+
+Button:
+   comm          - gnd
+   normally open - GPIO 24
+
+"""
 
 class Joystick(object):
    def __init__(self):
@@ -35,15 +55,20 @@ class Joystick(object):
          return LEFT
       elif right and not (up or down):
          return RIGHT
+      elif (left or right) and (up or down):
+         return MANY
       else:
          return NONE
 
-#def read_button():
-#   s = raw_input("Enter button, empty string is unpressed")
-#   if len(s):
-#      return PRESSED
-#   else:
-#      return UNPRESSED
+class Button(object):
+   def __init__(self):
+      self.PIN = 18
+      gpio.setmode(gpio.BOARD)
+      gpio.setup(self.PIN, gpio.IN, pull_up_down=gpio.PUD_UP)
+
+   def read(self):
+      return PRESSED if gpio.input(self.PIN) == 0 else UNPRESSED
+
 
 from time import sleep
 def main():

@@ -10,7 +10,7 @@ import gobject
 import time
 
 from configurator import Configurator
-from buttons import NONE, LEFT, RIGHT, UP, DOWN, PRESSED, UNPRESSED, Joystick
+from buttons import NONE, LEFT, RIGHT, UP, DOWN, PRESSED, UNPRESSED, Joystick, Button
 
 
 WAITING = 1
@@ -30,12 +30,14 @@ class HelloWorld:
 
    def init_inputs(self):
       self.prev_joystick_state = NONE
+      self.prev_button_state = UNPRESSED
       self.joystick = Joystick()
+      self.button   = Button()
 
    def init_menu(self):
       self.conf = Configurator()
       self.menu = self.conf.build_main_menu()
-      self.curr_choice = 1
+      self.curr_choice = 0
 
    def init_gui(self):
       # create a new window
@@ -76,7 +78,7 @@ class HelloWorld:
 
    def state_machine_tick(self):
       if self.state == WAITING:
-         button_state   = UNPRESSED#read_button()
+         button_state   = self.button.read()
          joystick_state = self.joystick.read()
          self.handle_input(button_state, joystick_state)
       if self.state == SLIDING:
@@ -85,7 +87,22 @@ class HelloWorld:
       return True
    
    def handle_input(self, button, joystick):
-      if self.prev_joystick_state == NONE:
+      if button == PRESSED:
+         if self.prev_button_state == UNPRESSED:
+
+            # TODO - do we pour directly from the menu or have some
+            # kind of details page?
+
+            if self.menu.is_leaf():
+               print "POURING DRINK!!! %s" % self.menu.key
+            else:
+               # Same as right joystick
+               self.menu = self.menu.choice(self.curr_choice)
+               self.curr_choice = 0
+               self.update_menu()
+
+      # ignore joystick if button pressed
+      elif self.prev_joystick_state == NONE:
          if   joystick == UP   and not self.menu.is_leaf():
             self.curr_choice = max(0, self.curr_choice - 1)
          elif joystick == DOWN and not self.menu.is_leaf():
@@ -104,6 +121,7 @@ class HelloWorld:
             self.update_choice()
 
       self.prev_joystick_state = joystick
+      self.prev_button_state   = button
 
    
    def update_menu(self):
