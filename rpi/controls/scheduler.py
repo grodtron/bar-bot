@@ -76,7 +76,7 @@ def get_movement_schedule(drink, current_position): # current_pos is unused, but
    print "drink.ingredients:",drink.ingredients
    for entry in drink.ingredients:
       print "   entry:", entry
-      slot = get_usable_slot(entry.ingredient)
+      slot = get_usable_slot(entry.ingredient.ingredient)
       spire[slot.spire].append(SlotAmount(slot, entry.amount))
 
    spire[1] = sorted(spire[1], key=attrgetter("amount"))
