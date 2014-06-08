@@ -2,3 +2,7 @@
 *.swo
 *.pyc
 *.p
+
+*.sdf
+*.suo
+*.vcxproj
