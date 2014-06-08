@@ -29,6 +29,7 @@ class HelloWorld:
       self.state = WAITING
 
    def init_inputs(self):
+      self.prev_joystick_state = NONE
       self.joystick = Joystick()
 
    def init_menu(self):
@@ -51,18 +52,13 @@ class HelloWorld:
       self.window.add(self.lay)
 
       self.vbox = gtk.VBox()
-
       self.vbox.set_size_request(self.width, self.height)
-
-      for choice in self.menu.choices:
-         self.b = b = gtk.Button("<span size='44000'>%s</span>" % choice)
-         b.child.set_use_markup(True)
-         self.vbox.add(b)
-         b.show()
 
       self.lay.put(self.vbox, 0, 0)
 
-      self.vbox.show()
+      self.update_menu()
+      self.update_choice()
+
       self.lay.show()
 
       self.update_choice()
@@ -89,17 +85,48 @@ class HelloWorld:
       return True
    
    def handle_input(self, button, joystick):
-      if   joystick == UP:
-         self.curr_choice = max(0, self.curr_choice - 1)
-         self.update_choice()
-      elif joystick == DOWN:
-         self.curr_choice = min(len(self.menu.choices) - 1, self.curr_choice + 1)
-         self.update_choice()
-      elif joystick == RIGHT:
-         pass
-      elif joystick == LEFT:
-         pass
+      if self.prev_joystick_state == NONE:
+         if   joystick == UP:
+            self.curr_choice = max(0, self.curr_choice - 1)
+         elif joystick == DOWN:
+            self.curr_choice = min(len(self.menu.choices) - 1, self.curr_choice + 1)
+         elif joystick == RIGHT:
+            if not self.menu.is_leaf():
+               self.menu = self.menu.choice(self.curr_choice)
+               self.curr_choice = 0
+               self.update_menu()
+         elif joystick == LEFT:
+            self.menu = self.menu.back()
+            self.curr_choice = 0
+            self.update_menu()
+
+         if joystick != NONE:
+            self.update_choice()
+
+      self.prev_joystick_state = joystick
+
    
+   def update_menu(self):
+      self.vbox.hide()
+
+      for child in self.vbox.get_children():
+         self.vbox.remove(child)
+
+      try:
+         choices = self.menu.choices
+      except AttributeError:
+         choices = (self.menu.key,)
+
+      for choice in self.menu.choices:
+         self.b = b = gtk.Button("<span size='44000'>%s</span>" % choice)
+         b.child.set_use_markup(True)
+         self.vbox.add(b)
+         b.show()
+
+   
+      self.vbox.show()
+
+
    def update_choice(self):
       print "self.curr_choice is now", self.curr_choice
       for i, child in enumerate(self.vbox.get_children()):
